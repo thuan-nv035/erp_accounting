@@ -1,7 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 from database import Base, engine
-from routers import account, journal, ledger, report, customer, supplier, product, sales_invoice
+from routers import account, journal, ledger, report, customer, supplier, product, sales_invoice, payment, \
+    purchase_invoice, stock_adjustment, sales_return
 
 Base.metadata.create_all(bind=engine)
 
@@ -19,7 +20,10 @@ app.include_router(customer.router)
 app.include_router(supplier.router)
 app.include_router(product.router)
 app.include_router(sales_invoice.router)
-
+app.include_router(payment.router)
+app.include_router(purchase_invoice.router)
+app.include_router(stock_adjustment.router)
+app.include_router(sales_return.router)
 @app.get("/")
 def root():
     return {

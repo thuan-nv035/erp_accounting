@@ -1,37 +1,40 @@
 from datetime import date
 from decimal import Decimal
+
 from pydantic import BaseModel
 
 
-class SalesInvoiceItemCreate(BaseModel):
+class PurchaseInvoiceItemCreate(BaseModel):
     product_id: int
     quantity: Decimal
     unit_price: Decimal
-    vat_rate: Decimal = Decimal("0.00")
+    tax_rate: Decimal = Decimal("0")
 
 
-class SalesInvoiceCreate(BaseModel):
+class PurchaseInvoiceCreate(BaseModel):
     invoice_no: str
-    customer_id: int
+    supplier_id: int
+
     invoice_date: date
     due_date: date | None = None
+
     description: str | None = None
 
-    receivable_account_id: int # 131 phải thu khách hàng.
-    revenue_account_id: int # 511 - Doanh thu bán hàng
-    tax_account_id: int | None = None  # 411 - Thuế GTGT phải nộp
+    purchase_account_id: int
+    tax_account_id: int | None = None
+    payable_account_id: int
 
-    items: list[SalesInvoiceItemCreate]
+    items: list[PurchaseInvoiceItemCreate]
 
 
-class SalesInvoiceItemResponse(BaseModel):
+class PurchaseInvoiceItemResponse(BaseModel):
     id: int
     product_id: int
     quantity: Decimal
     unit_price: Decimal
-    vat_rate: Decimal
+    tax_rate: Decimal
     line_subtotal: Decimal
-    line_vat: Decimal
+    line_tax: Decimal
     line_total: Decimal
 
     model_config = {
@@ -39,19 +42,27 @@ class SalesInvoiceItemResponse(BaseModel):
     }
 
 
-class SalesInvoiceResponse(BaseModel):
+class PurchaseInvoiceResponse(BaseModel):
     id: int
     invoice_no: str
-    customer_id: int
-    journal_entry_id: int | None
+    supplier_id: int
+
     invoice_date: date
     due_date: date | None
+
     description: str | None
-    status: str
+
     subtotal: Decimal
-    vat_amount: Decimal
+    tax_amount: Decimal
     total_amount: Decimal
-    items: list[SalesInvoiceItemResponse]
+
+    purchase_account_id: int
+    tax_account_id: int | None
+    payable_account_id: int
+
+    journal_entry_id: int | None
+
+    items: list[PurchaseInvoiceItemResponse]
 
     model_config = {
         "from_attributes": True
